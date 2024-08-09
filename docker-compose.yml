@@ -5,3 +5,13 @@ services:
       - "8080:8080"
     volumes:
       - ./backend:/app
+  varnish:
+    image: varnish:latest
+    ports:
+      - "9000:80"
+    volumes:
+      - ./varnish/default.vcl:/etc/varnish/default.vcl
+    environment:
+      - VARNISH_SIZE=64M
+    depends_on:
+      - backend

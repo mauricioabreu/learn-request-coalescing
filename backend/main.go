@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"net/http"
 	"time"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 )
 
 func streamResponse(w http.ResponseWriter, r *http.Request) {
@@ -24,9 +27,18 @@ func streamResponse(w http.ResponseWriter, r *http.Request) {
 }
 
 func main() {
-	http.HandleFunc("/", streamResponse)
+	r := chi.NewRouter()
+
+	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
+
+	r.Get("/stream", streamResponse)
+	r.Get("/healthcheck", func(w http.ResponseWriter, r *http.Request) {
+		w.Write([]byte("WORKING"))
+	})
+
 	fmt.Println("Server is running on port :8080")
-	if err := http.ListenAndServe(":8080", nil); err != nil {
+	if err := http.ListenAndServe(":8080", r); err != nil {
 		fmt.Printf("Error starting server: %s\n", err)
 	}
 }
