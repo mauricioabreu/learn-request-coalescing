@@ -9,7 +9,7 @@ import (
 	"github.com/go-chi/chi/v5/middleware"
 )
 
-func streamResponse(w http.ResponseWriter, r *http.Request) {
+func streamResponse(w http.ResponseWriter, _ *http.Request) {
 	flusher, ok := w.(http.Flusher)
 	if !ok {
 		http.Error(w, "Streaming response unsupported!", http.StatusInternalServerError)
@@ -19,11 +19,17 @@ func streamResponse(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "text/plain")
 	w.Header().Set("X-Content-Type-Options", "nosniff")
 
-	for i := 1; i <= 10; i++ {
+	for i := 1; i <= 50; i++ {
 		fmt.Fprintf(w, "Data %d\n", i)
 		flusher.Flush()
 		time.Sleep(500 * time.Millisecond)
 	}
+}
+
+func slowResponse(w http.ResponseWriter, r *http.Request) {
+	time.Sleep(3 * time.Second)
+	w.Header().Set("Content-Type", "text/plain")
+	fmt.Fprintf(w, "Data from server at %s", time.Now())
 }
 
 func main() {
@@ -32,6 +38,7 @@ func main() {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
+	r.Get("/fetch", slowResponse)
 	r.Get("/stream", streamResponse)
 	r.Get("/healthcheck", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("WORKING"))

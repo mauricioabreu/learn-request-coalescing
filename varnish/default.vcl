@@ -12,16 +12,9 @@ backend default {
     .probe = healthcheck;
 }
 
-sub vcl_recv {
-    if (req.url ~ "^/stream") {
-        return (pass);
-    }
-
-    return (hash);
-}
-
 sub vcl_backend_response {
-    set beresp.ttl = 30s;
+    set beresp.do_stream = true;
+    set beresp.ttl = 10s;
 }
 
 sub vcl_deliver {
