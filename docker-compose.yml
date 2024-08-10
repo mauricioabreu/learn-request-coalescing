@@ -8,10 +8,18 @@ services:
   varnish:
     image: varnish:latest
     ports:
-      - "9000:80"
+      - "9090:80"
     volumes:
       - ./varnish/default.vcl:/etc/varnish/default.vcl
     environment:
       - VARNISH_SIZE=64M
+    depends_on:
+      - backend
+  nginx:
+    image: nginx:latest
+    ports:
+      - "9191:80"
+    volumes:
+      - ./nginx/default.conf:/etc/nginx/nginx.conf:ro
     depends_on:
       - backend
