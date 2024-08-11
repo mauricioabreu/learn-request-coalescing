@@ -17,7 +17,6 @@ func streamResponse(w http.ResponseWriter, _ *http.Request) {
 	}
 
 	w.Header().Set("Content-Type", "text/plain")
-	w.Header().Set("X-Content-Type-Options", "nosniff")
 
 	for i := 1; i <= 50; i++ {
 		fmt.Fprintf(w, "Data %d\n", i)
