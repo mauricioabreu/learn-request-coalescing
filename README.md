@@ -1,6 +1,6 @@
 # Learn Request Coalescing
 
-This project aims to compare and analyze request coalescing behavior in Varnish and NGINX. It consists of a simple Go backend server, and configurations for both Varnish and NGINX as reverse proxies.
+This project aims to compare and analyze request coalescing behavior in [Varnish](https://varnish-cache.org/) and [NGINX](https://nginx.org/). It consists of a simple Go backend server, and configurations for both Varnish and NGINX as reverse proxies.
 
 ---
 
@@ -22,3 +22,24 @@ When multiple requests are sent to the same resource at the same time, the webse
 Our toy system consists of three main components:
 * An HTTP server writen in Go, designed to reply slow and streaming responses.
 * Reverse Proxies: Varnish and NGINX configured to handle HTTP requests.
+
+## Components
+
+### Backend
+
+The backend is a simple Go HTTP server that implements a `/stream` and `slow` endpoints. This endpoint simulates slow responses by streaming data with deliberate delays.
+
+It listens on port 8080 and has two endpoints:
+* `/stream`: Streams data to the client using chunked encoding.
+* `/slow`: Delays the response for a fixed amount of time.
+
+### Varnish
+
+Varnish is a caching HTTP reverse proxy.
+
+* Enable *streaming* by setting `do_stream`to `true`.
+* Custom headers to track coalescing and caching behavior.
+
+### NGINX
+
+NGINX is configured as an alternative reverse proxy to Varnish. It uses cache locking for request coalescing.
