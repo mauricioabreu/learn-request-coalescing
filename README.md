@@ -40,6 +40,37 @@ Varnish is a caching HTTP reverse proxy.
 * Enable *streaming* by setting `do_stream`to `true`.
 * Custom headers to track coalescing and caching behavior.
 
+Varnish listens on port 9090 and forwards requests to the backend server.
+
 ### NGINX
 
 NGINX is configured as an alternative reverse proxy to Varnish. It uses cache locking for request coalescing.
+
+NGINX listens on port 9191 and forwards requests to the backend server.
+
+## Setup
+
+You need to have Docker and [just](https://github.com/casey/just) installed.
+
+### Building
+
+```sh
+just build
+```
+
+### Running
+
+```sh
+just run
+```
+
+Running the command above will start the backend server, Varnish, and NGINX.
+
+Now we can play with the `/stream` route, either by requesting the backend directly or through the reverse proxies.
+
+
+## Results Analysis
+
+For both Varnish and NGINX, any request sent to the `/stream` endpoint will be coalesced. The difference between them is how they handle the response to all clients waiting. Requests to Varnish will start streaming as soon as the backend starts sending data, while NGINX will wait for the backend to respond, then NGINX will write the data to the cache, and finally the response will be sent to all clients, all served from the cache.
+
+Varnish sends `hit` in the `X-Cache-Status` header as soon as the first receives the response headers of the backend while NGINX sends `hit` only when the response is fully received and written to the cache.
