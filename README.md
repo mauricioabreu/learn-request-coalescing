@@ -82,3 +82,5 @@ For both Varnish and NGINX, any request sent to the `/stream` endpoint will be c
 Varnish sends `hit` in the `X-Cache-Status` header as soon as the first receives the response headers of the backend while NGINX sends `hit` only when the response is fully received and written to the cache.
 
 For NGINX, I think we can have a similar behavior to Varnish by setting `proxy_buffering` to `off`. When `proxy_buffering` is off, NGINX will start sending the response to the client as soon as it receives the response headers from the backend. However, features like rate limiting and caching don't work.
+
+For Varnish, the magic happens when setting `do_stream` to `true`.
