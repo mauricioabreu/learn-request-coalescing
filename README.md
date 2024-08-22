@@ -76,6 +76,7 @@ A bit of explanation about the possible values of the `X-Cache-Status` header
 * **HIT:** response was served from the cache.
 * **MISS:** response was not found in the cache and was fetched from the backend/upstream.
 * **UPDATING:** response is being updated in the cache (NGINX only).
+    * This happens when the response is being written to the cache. You have the option to configure your backend to send a stale response.
 
 For both Varnish and NGINX, any request sent to the `/stream` endpoint will be coalesced. The difference between them is how they handle the response to all clients waiting. Requests to Varnish will start streaming as soon as the backend starts sending data, while NGINX will wait for the backend to respond, then NGINX will write the data to the cache, and finally the response will be sent to all clients, all served from the cache.
 
