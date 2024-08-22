@@ -80,3 +80,5 @@ A bit of explanation about the possible values of the `X-Cache-Status` header
 For both Varnish and NGINX, any request sent to the `/stream` endpoint will be coalesced. The difference between them is how they handle the response to all clients waiting. Requests to Varnish will start streaming as soon as the backend starts sending data, while NGINX will wait for the backend to respond, then NGINX will write the data to the cache, and finally the response will be sent to all clients, all served from the cache.
 
 Varnish sends `hit` in the `X-Cache-Status` header as soon as the first receives the response headers of the backend while NGINX sends `hit` only when the response is fully received and written to the cache.
+
+For NGINX, I think we can have a similar behavior to Varnish by setting `proxy_buffering` to `off`. When `proxy_buffering` is off, NGINX will start sending the response to the client as soon as it receives the response headers from the backend. However, features like rate limiting and caching don't work.
